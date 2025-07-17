@@ -42,3 +42,63 @@ html, body {
     align-items: center;
     width: 100%;
 }
+
+#CD-tracks {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 230px;
+}
+
+.track {
+    min-width: 32px;
+    min-height: 24px;
+    transform: rotate(-10deg);
+    border-radius: 50%;
+    background-color: transparent;
+    border: white 2px solid;
+    margin: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.track p {
+    transform: rotate(10deg); /* draai de tekst terug */
+    display: inline-block;
+    color: white;
+    font-size: 14px;
+    margin: 0;
+}
+
+#middle-line {  
+    height: 224px; /* zelfde hoogte als equalizer */
+    border-left: 4px dotted white;  
+    margin: 0 auto; 
+    transform: rotate(10deg);
+}
+
+#middle-line-inverted {  
+    height: 224px; /* zelfde hoogte als equalizer */
+    border-left: 4px dotted white;  
+    margin: 0 auto; 
+    transform: rotate(-10deg);
+}
+
+.dot-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* ruimte tussen puntjes */
+  height: 200px;
+  justify-content: center;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: white;
+}
