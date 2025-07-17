@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
+    <script src="eqaulizer.js" defer></script>
 </head>
 <body>
 
@@ -17,7 +18,7 @@
         <span id="clock"></span>
     </section>
     <section id="title">
-        <span id="title-text">AUX</span>
+        <span id="title-text"></span>
     </section>
 </section>
 <section id="middle">
@@ -39,18 +40,7 @@
         <span class="track" id="track15"></span>
         <span class="track" id="track16"></span>
     </section>
-    <section id="equalizer">
-        <div class="equalizer-bars">
-            <div class="bar" id="bar1-63"></div>
-            <div class="bar" id="bar2-160"></div>
-            <div class="bar" id="bar3-400"></div>
-            <div class="bar" id="bar4-1000"></div>
-            <div class="bar" id="bar5-2500"></div>
-            <div class="bar" id="bar6-6300"></div>
-            <div class="bar" id="bar7-16000"></div>
-            <div class="bar" id="bar8-total"></div>
-        </div>
-    </section>
+  <canvas id="visualizer" width="400" height="224"></canvas>
 </section>
 <section id="bottom">
     <section id="input-buttons">
@@ -61,6 +51,7 @@
         <button class="input-button" id="tape-button">TAPE</button>
         <button class="input-button" id="cd-button">CD</button>
     </section>
+    <input type="file" id="audioFile" accept="audio/*">
 </section>
 </body>
 </html>

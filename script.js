@@ -33,7 +33,7 @@ function stopClock() {
 // Hulpfunctie om een inputbron te kiezen
 function setSource(title, track = "") {
     if (!isPoweredOn) return;
-    stopClock(); // klok stoppen bij source selectie
+    stopClock(); // klok stoppen bij power ON en bronselectie
     titleText.textContent = title;
     trackInfo.textContent = track;
 }
@@ -56,7 +56,7 @@ tapeButton.addEventListener("click", () => {
 });
 
 cdButton.addEventListener("click", () => {
-    setSource("NO DISC", "Track 01");
+    setSource("NO DISC");
 });
 
 // Power-knop
@@ -64,10 +64,10 @@ powerButton.addEventListener("click", () => {
     isPoweredOn = !isPoweredOn;
 
     if (isPoweredOn) {
-        startClock();
-    } else {
-        stopClock();
+        stopClock(); // klok uit als power aan
         titleText.textContent = "";
         trackInfo.textContent = "";
+    } else {
+        startClock(); // klok aan als power uit
     }
 });
