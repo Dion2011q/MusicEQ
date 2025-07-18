@@ -7,6 +7,8 @@ const cdButton = document.getElementById("cd-button");
 const tapeButton = document.getElementById("tape-button");
 const powerButton = document.getElementById("power-button");
 const trackInfo = document.getElementById("track-info");
+const radio = document.getElementById("radio");
+const button = document.querySelector("button");
 
 let isPoweredOn = false;
 let clockInterval = null;
@@ -45,18 +47,22 @@ radioButton.addEventListener("click", () => {
 
 auxButton.addEventListener("click", () => {
     setSource("AUX");
+    radio.pause();
 });
 
 phonoButton.addEventListener("click", () => {
     setSource("PHONO");
+    radio.pause();
 });
 
 tapeButton.addEventListener("click", () => {
     setSource("TAPE");
+    radio.pause();
 });
 
 cdButton.addEventListener("click", () => {
     setSource("NO DISC");
+    radio.pause();
 });
 
 // Power-knop
@@ -71,3 +77,7 @@ powerButton.addEventListener("click", () => {
         startClock(); // klok aan als power uit
     }
 });
+
+function toggleRadio() {
+        radio.play();
+}

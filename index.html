@@ -7,7 +7,8 @@
 
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
-    <script src="eqaulizer.js" defer></script>
+    <script src="equalizer.js" defer></script>
+    <script src="radio.js" defer></script>
 </head>
 <body>
 
@@ -41,23 +42,22 @@
     </section>
     <div id="middle-line"></div>
     <canvas id="visualizer" width="400" height="224"></canvas>
-<div class="dot-line">
-  <div class="dot"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
-</div>
+    <div id="middle-line-inverted"></div>
 </section>
 <section id="bottom">
     <section id="input-buttons">
         <button class="input-button" id="power-button">POWER</button>
-        <button class="input-button" id="radio-button">FM/MW/LW</button>
+        <button class="input-button" id="radio-button" onclick="toggleRadio()">FM/MW/LW</button>
         <button class="input-button" id="aux-button">AUX</button>
         <button class="input-button" id="phono-button">PHONO</button>
         <button class="input-button" id="tape-button">TAPE</button>
         <button class="input-button" id="cd-button">CD</button>
     </section>
     <input type="file" id="audioFile" accept="audio/*">
+      <audio id="radio" preload="none">
+    <source src="https://icecast.omroep.nl/radio2-bb-mp3" type="audio/mpeg">
+    Je browser ondersteunt deze audio niet.
+  </audio>
 </section>
 <div class="cd-testlogo"></div>
 </body>

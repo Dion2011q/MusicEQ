@@ -19,6 +19,7 @@ const canvas = document.getElementById('visualizer');
 
       const audio = new Audio();
       audio.src = URL.createObjectURL(file);
+      audio.src = URL.createObjectURL(MediaStream);
       audio.controls = true;
       document.body.appendChild(audio);
       audio.play();
@@ -73,7 +74,7 @@ const canvas = document.getElementById('visualizer');
           } else {
             // totaalvolume (8e bar)
             const sum = dataArray.reduce((a, b) => a + b, 0);
-            value = (sum / dataArray.length) * 1.0; // geen extra gain hier
+            value = (sum / dataArray.length) * 3.5; // geen extra gain hier
           }
 
           const steps = Math.floor((value / 255) * maxSteps);
