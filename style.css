@@ -19,6 +19,19 @@ html, body {
      font-family: Arial, Helvetica, sans-serif;
  }
 
+#info-lights {
+    margin-right: 16px;
+}
+
+#title {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    text-align: left;
+    color: white;
+}
+
 #title-text {
     font-family: 'LED-Dots', sans-serif;
     font-size: 5rem;
@@ -35,7 +48,7 @@ html, body {
     border-radius: 5px;
 }
 
-#top, #middle, #bottom {
+#row1, #row2, #row3, #row4 {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -47,8 +60,6 @@ html, body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
     max-width: 230px;
 }
 
@@ -105,4 +116,21 @@ html, body {
 
 #visualizer {
 margin: 0;
+}
+
+#sound-modes ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sound-mode {
+    padding-left: 1.5em;
+    position: relative;
+}
+
+.sound-mode.selected::before {
+    content: "▶";
+    color: red;
+    position: absolute;
+    left: 0;
 }

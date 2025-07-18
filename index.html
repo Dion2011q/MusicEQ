@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MusicEQ</title>
+    <title> MusicEQ</title>
 
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
     <script src="equalizer.js" defer></script>
     <script src="radio.js" defer></script>
+    <script src="sound-mode.js" defer></script>
 </head>
 <body>
 
-<section id="top">
+<section id="row1">
     <section id="info-lights">
         <span id="track-info"></span>
         <span id="on-time"></span>
-        <span id="clock"></span>
+        <span id="clock-info"></span>
     </section>
     <section id="title">
         <span id="title-text"></span>
     </section>
 </section>
-<section id="middle">
+<section id="row2">
     <section id="CD-tracks">
         <span class="track" id="track1"><p>1</p></span>
         <span class="track" id="track2"><p>2</p></span>
@@ -40,18 +41,31 @@
         <span class="track" id="track14"><p>14</p></span>
         <span class="track" id="track15"><p>15</p></span>
     </section>
-    <div id="middle-line"></div>
-    <canvas id="visualizer" width="400" height="224"></canvas>
-    <div id="middle-line-inverted"></div>
+        <div id="middle-line"></div>
+        <canvas id="visualizer" width="400" height="224"></canvas>
+        <div id="middle-line-inverted"></div>
+    <section id="sound-modes">
+        <ul>
+            <li class="sound-mode">D.CLUB</li>
+            <li class="sound-mode">HALL</li>
+            <li class="sound-mode">STADIUM</li>
+            <li class="sound-mode">ROCK</li>
+            <li class="sound-mode">POPS</li>
+            <li class="sound-mode">CLASSIC</li>
+            <li class="sound-mode">MANUAL</li>
+        </ul>
+    </section>
+    <section id="controls">
+        <button id="prev">prev</button>
+        <button id="next">next</button>
+    </section>
 </section>
-<section id="bottom">
+<section id="row3">
     <section id="input-buttons">
         <button class="input-button" id="power-button">POWER</button>
         <button class="input-button" id="radio-button" onclick="toggleRadio()">FM/MW/LW</button>
         <button class="input-button" id="aux-button">AUX</button>
         <button class="input-button" id="phono-button">PHONO</button>
-        <button class="input-button" id="tape-button">TAPE</button>
-        <button class="input-button" id="cd-button">CD</button>
     </section>
     <input type="file" id="audioFile" accept="audio/*">
       <audio id="radio" preload="none">
@@ -59,6 +73,9 @@
     Je browser ondersteunt deze audio niet.
   </audio>
 </section>
-<div class="cd-testlogo"></div>
+<section id="row4">
+        <button class="input-button" id="tape-button">TAPE</button>
+        <button class="input-button" id="cd-button">CD</button>
+</section>
 </body>
 </html>
