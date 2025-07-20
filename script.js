@@ -9,84 +9,75 @@ const powerButton = document.getElementById("power-button");
 const trackInfo = document.getElementById("track-info");
 const radio = document.getElementById("radio");
 const clockInfo = document.getElementById("clock-info");
+const infoLights = document.getElementById("info-lights"); // ← toegevoegd
 
 let isPoweredOn = false;
 let clockInterval = null;
-let lastSource = null; // <- Onthoudt de laatst gekozen bron
+let lastSource = null;
 
-// Bij het laden van de pagina: standaard power uit
+// Bij het laden van de pagina: klokmodus aan
 window.addEventListener("DOMContentLoaded", () => {
     isPoweredOn = false;
-
-    // Direct klok tonen zonder vertraging
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    titleText.textContent = `${hours}:${minutes}`;
-    trackInfo.textContent = "";
-    clockInfo.textContent = "CLOCK";
-
-    startClock(); // en daarna updaten per seconde
+    showClock();
     radio.pause();
 });
 
-// Hulpfunctie om klok te starten
-function startClock() {
+// Start klokmodus
+function showClock() {
     function updateClock() {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
+        const hours = now.getHours().toString(); // ← geen padStart
         const minutes = now.getMinutes().toString().padStart(2, '0');
         titleText.textContent = `${hours}:${minutes}`;
-        trackInfo.textContent = "";
-        clockInfo.textContent = "CLOCK";
     }
+
     updateClock();
     clockInterval = setInterval(updateClock, 1000);
+    trackInfo.textContent = "";
+    clockInfo.textContent = "CLOCK";
+    infoLights.style.marginRight = "128px"; // ← aangepaste marge bij klokmodus
 }
 
-// Hulpfunctie om klok te stoppen
+// Stop klokmodus
 function stopClock() {
     clearInterval(clockInterval);
     clockInterval = null;
+    clockInfo.textContent = "";
+    infoLights.style.marginRight = "24px"; // ← normale marge buiten klokmodus
 }
 
-// Hulpfunctie om een inputbron te kiezen
+// Inputbron selecteren
 function setSource(title, track = "") {
-    stopClock(); // klok stoppen bij power ON en bronselectie
+    stopClock();
     titleText.textContent = title;
     trackInfo.textContent = track;
-    lastSource = { title, track }; // <- Sla de gekozen bron op
+    lastSource = { title, track };
 }
 
-// Bron-knoppen
+// Bronknoppen
 radioButton.addEventListener("click", () => {
     setSource("FM 88.10 MHz");
     toggleRadio();
-    clockInfo.textContent = "";
 });
 
 auxButton.addEventListener("click", () => {
     setSource("AUX");
     radio.pause();
-    clockInfo.textContent = "";
 });
 
 phonoButton.addEventListener("click", () => {
     setSource("PHONO");
     radio.pause();
-    clockInfo.textContent = "";
 });
 
 tapeButton.addEventListener("click", () => {
     setSource("TAPE");
     radio.pause();
-    clockInfo.textContent = "";
 });
 
 cdButton.addEventListener("click", () => {
     setSource("NO DISC");
     radio.pause();
-    clockInfo.textContent = "";
 });
 
 // Power-knop
@@ -94,22 +85,21 @@ powerButton.addEventListener("click", () => {
     isPoweredOn = !isPoweredOn;
 
     if (isPoweredOn) {
-        stopClock(); // klok uit als power aan
+        stopClock();
 
         if (lastSource) {
-            setSource(lastSource.title, lastSource.track); // <- Ga terug naar vorige bron
+            setSource(lastSource.title, lastSource.track);
             if (lastSource.title.startsWith("FM")) {
                 toggleRadio();
             }
         } else {
-            // Fallback naar AUX
             setSource("AUX");
             lastSource = { title: "AUX", track: "" };
             radio.pause();
         }
 
     } else {
-        startClock(); // klok aan als power uit
+        showClock();
         radio.pause();
     }
 });

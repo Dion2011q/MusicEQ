@@ -1,4 +1,3 @@
-const radio = document.getElementById("radio");
 const button = document.querySelector("button");
 
 function toggleRadio() {

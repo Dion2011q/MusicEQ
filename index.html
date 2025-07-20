@@ -94,10 +94,11 @@
         <button class="input-button" id="phono-button">PHONO</button>
     </section>
     <input type="file" id="audioFile" accept="audio/*">
-      <audio id="radio" preload="none">
-    <source src="https://icecast.omroep.nl/radio2-bb-mp3" type="audio/mpeg">
-    Je browser ondersteunt deze audio niet.
-  </audio>
+<button id="playRadio">Play Radio</button>
+<audio id="radio" crossorigin="anonymous" controls preload="none">
+  <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac">
+  Je browser ondersteunt deze audio niet.
+</audio>
 </section>
 <section id="row5">
         <button class="input-button" id="tape-button">TAPE</button>
