@@ -81,7 +81,7 @@
             value = averageInRange(minF, maxF) * gain;
           } else {
             const sum = dataArray.reduce((a, b) => a + b, 0);
-            value = (sum / dataArray.length) * 4.2;
+            value = (sum / dataArray.length) * 3;
           }
 
           const targetSteps = Math.floor((value / 255) * maxSteps);
