@@ -93,12 +93,34 @@
         <button class="input-button" id="aux-button">AUX</button>
         <button class="input-button" id="phono-button">PHONO</button>
     </section>
-    <input type="file" id="audioFile" accept="audio/*">
-<button id="playRadio">Play Radio</button>
-<audio id="radio" crossorigin="anonymous" controls preload="none">
-  <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac">
-  Je browser ondersteunt deze audio niet.
-</audio>
+ <input type="file" id="audioFile" accept=".mp3,audio/mpeg">
+  <br><br>
+  <audio id="audioPlayer" controls></audio>
+
+  <script>
+    const input = document.getElementById('audioFile');
+    const player = document.getElementById('audioPlayer');
+
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      // Check of het bestand een MP3 is
+      const isMp3 = file.name.toLowerCase().endsWith('.mp3') || file.type === 'audio/mpeg';
+
+      if (!isMp3) {
+        alert("Dit is geen geldig MP3-bestand.");
+        return;
+      }
+
+      // ObjectURL maken en afspelen
+      const url = URL.createObjectURL(file);
+      player.src = url;
+
+      // Voor iOS autoplay werkt niet zonder user interaction, dus alleen .play() als gebruiker net klikte
+      player.load();
+    });
+  </script>
 </section>
 <section id="row5">
         <button class="input-button" id="tape-button">TAPE</button>
