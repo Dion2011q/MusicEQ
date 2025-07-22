@@ -1,4 +1,23 @@
-      const canvas = document.getElementById('visualizer');
+    // file equalizer.js
+
+
+    const radio = document.getElementById('radio');
+const radioButton = document.getElementById('radio-button');
+
+let radioPlaying = false;
+
+radioButton.addEventListener('click', () => {
+    if (radioPlaying) {
+        radio.pause();
+        radioPlaying = false;
+    } else {
+        radio.play();
+        radioPlaying = true;
+    }
+});
+
+    
+    const canvas = document.getElementById('visualizer');
     const ctx = canvas.getContext('2d');
     const fileInput = document.getElementById('audioFile');
 
@@ -81,7 +100,7 @@
             value = averageInRange(minF, maxF) * gain;
           } else {
             const sum = dataArray.reduce((a, b) => a + b, 0);
-            value = (sum / dataArray.length) * 3;
+            value = (sum / dataArray.length) * 4;
           }
 
           const targetSteps = Math.floor((value / 255) * maxSteps);
