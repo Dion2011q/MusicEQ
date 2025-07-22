@@ -136,11 +136,18 @@ margin: -80px;
 }
 
 .sound-mode.selected::before {
-    content: "▶";
-    color: red;
+    content: "";
+    background-image: url("img/red_arrow.png"); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    margin-top: 1px; /* pijl ff iets naar beneden */
+    width: 1em;
+    height: 1em;
     position: absolute;
     left: 0;
 }
+
 
 
 #row2 {

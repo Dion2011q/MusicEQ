@@ -9,7 +9,8 @@ const powerButton = document.getElementById("power-button");
 const trackInfo = document.getElementById("track-info");
 const radio = document.getElementById("radio");
 const clockInfo = document.getElementById("clock-info");
-const infoLights = document.getElementById("info-lights"); // ← toegevoegd
+const infoLights = document.getElementById("info-lights");
+const button = document.querySelector("button");
 
 let isPoweredOn = false;
 let clockInterval = null;
@@ -103,6 +104,14 @@ powerButton.addEventListener("click", () => {
         radio.pause();
     }
 });
+
+function toggleRadio() {
+    if (radio.paused) {
+        radio.play();
+    } else {
+        radio.pause();
+    }
+}
 
 // Speel radio af
 function toggleRadio() {

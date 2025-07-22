@@ -1,72 +1,200 @@
-<canvas id="visualizer" width="500" height="300" style="background:black;"></canvas>
-<input type="file" id="audioFile" accept="audio/*">
-<button id="startRadio">Start Radio</button>
-
-<audio id="radio" crossorigin="anonymous" controls>
-  <source src="https://icecast.omroep.nl/radio2-bb-mp3" type="audio/mpeg">
-</audio>
-
-
-<script>
-const canvas = document.getElementById('visualizer');
-const ctx = canvas.getContext('2d');
-const fileInput = document.getElementById('audioFile');
-const radio = document.getElementById('radio');
-const startRadioBtn = document.getElementById('startRadio');
-
-function startVisualizer(audio) {
-  console.log("Visualizer gestart voor:", audio.src);
-
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const source = audioCtx.createMediaElementSource(audio);
-  const analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 2048;
-  analyser.smoothingTimeConstant = 0.6;
-
-  source.connect(analyser);
-  analyser.connect(audioCtx.destination);
-
-  const bufferLength = analyser.frequencyBinCount;
-  const dataArray = new Uint8Array(bufferLength);
-
-  function draw() {
-    requestAnimationFrame(draw);
-    analyser.getByteFrequencyData(dataArray);
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const barWidth = canvas.width / bufferLength;
-    for (let i = 0; i < bufferLength; i++) {
-      const value = dataArray[i];
-      const y = (value / 255) * canvas.height;
-      ctx.fillStyle = 'lime';
-      ctx.fillRect(i * barWidth, canvas.height - y, barWidth, y);
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Switch + Visualizer</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
     }
-  }
-  draw();
-}
+    canvas {
+      background: #222;
+      margin-top: 20px;
+    }
+    .input-button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
 
-// MP3-bestand afspelen
-fileInput.addEventListener('change', function () {
-  const file = this.files[0];
-  if (!file) return;
+  <h1>Audio Input Switch + Visualizer</h1>
 
-  const audio = new Audio();
-  audio.src = URL.createObjectURL(file);
-  audio.controls = true;
-  document.body.appendChild(audio);
+  <section>
+    <button class="input-button" onclick="switchInput('radio')">FM/MW/LW</button>
+    <button class="input-button" onclick="switchInput('mp3')">MP3</button>
+    <button class="input-button" onclick="switchInput('aux')">AUX</button>
+    <button class="input-button" onclick="switchInput('phono')">PHONO</button>
+  </section>
 
-  audio.play().then(() => {
-    console.log("MP3 speelt!");
-    startVisualizer(audio);
-  }).catch(err => console.error("Fout bij mp3 afspelen:", err));
-});
+  <input type="file" id="audioFile" accept=".mp3,audio/mpeg">
 
-// Radiostream afspelen
-startRadioBtn.addEventListener('click', function () {
-  radio.play().then(() => {
-    console.log("Radio speelt!");
-    startVisualizer(radio);
-  }).catch(err => console.error("Fout bij radio afspelen:", err));
-});
-</script>
+  <canvas id="visualizer" width="400" height="250"></canvas>
+
+  <audio id="radio" crossorigin="anonymous" preload="none">
+    <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac">
+    Je browser ondersteunt deze audio niet.
+  </audio>
+
+  <script>
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    const fileInput = document.getElementById('audioFile');
+    const radio = document.getElementById('radio');
+
+    const bandSettings = [
+      { range: [25, 99], gain: 0.8 },
+      { range: [100, 249], gain: 0.9 },
+      { range: [250, 649], gain: 1.0 },
+      { range: [650, 1599], gain: 1.1 },
+      { range: [1600, 4499], gain: 1.2 },
+      { range: [4500, 11999], gain: 1.5 },
+      { range: [12000, 20000], gain: 1.9 }
+    ];
+
+    let audioCtx;
+    let analyser;
+    let source;
+    let dataArray;
+    let bufferLength;
+    let currentAudio = null;
+    let mp3Audio = null;
+
+    const previousValues = new Array(8).fill(0);
+    const decayDown = 0.4;
+    const decayUp = 0.7;
+
+    function setupVisualizer(audioElement) {
+      if (audioCtx?.state === 'closed' || !audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (source) source.disconnect();
+
+      source = audioCtx.createMediaElementSource(audioElement);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.6;
+
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+      draw();
+    }
+
+    function draw() {
+      if (!analyser) return;
+      requestAnimationFrame(draw);
+      analyser.getByteFrequencyData(dataArray);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = 40;
+      const gap = 10;
+      const stepHeight = 16;
+      const maxSteps = 14;
+
+      for (let i = 0; i < 8; i++) {
+        let value;
+        if (i < 7) {
+          const { range: [minF, maxF], gain } = bandSettings[i];
+          value = averageInRange(minF, maxF) * gain;
+        } else {
+          const sum = dataArray.reduce((a, b) => a + b, 0);
+          value = (sum / dataArray.length) * 3;
+        }
+
+        const targetSteps = Math.floor((value / 255) * maxSteps);
+
+        if (targetSteps > previousValues[i]) {
+          previousValues[i] += decayUp;
+          if (previousValues[i] > targetSteps) previousValues[i] = targetSteps;
+        } else {
+          previousValues[i] -= decayDown;
+          if (previousValues[i] < targetSteps) previousValues[i] = targetSteps;
+        }
+
+        const steps = Math.floor(previousValues[i]);
+        const x = i * (barWidth + gap);
+
+        for (let s = 0; s < steps; s++) {
+          const y = canvas.height - (s + 1) * stepHeight;
+          ctx.fillStyle = "white";
+          ctx.fillRect(x, y, barWidth, stepHeight - 2);
+        }
+      }
+    }
+
+    function getIndexFromFreq(freq) {
+      const nyquist = audioCtx.sampleRate / 2;
+      return Math.floor(freq / nyquist * bufferLength);
+    }
+
+    function averageInRange(minFreq, maxFreq) {
+      const start = getIndexFromFreq(minFreq);
+      const end = getIndexFromFreq(maxFreq);
+      let sum = 0, count = 0;
+      for (let i = start; i <= end; i++) {
+        sum += dataArray[i];
+        count++;
+      }
+      return count > 0 ? sum / count : 0;
+    }
+
+    function switchInput(type) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+
+      if (type === 'radio') {
+        radio.play();
+        currentAudio = radio;
+        setupVisualizer(radio);
+      } else if (type === 'mp3') {
+        if (mp3Audio) {
+          mp3Audio.play();
+          currentAudio = mp3Audio;
+          setupVisualizer(mp3Audio);
+        } else {
+          alert("Geen mp3 geselecteerd.");
+        }
+      } else {
+        currentAudio = null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        alert(type.toUpperCase() + ' geselecteerd (geen audio)');
+      }
+    }
+
+    fileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      if (mp3Audio) {
+        mp3Audio.pause();
+        mp3Audio.remove();
+        mp3Audio = null;
+      }
+
+      mp3Audio = new Audio();
+      mp3Audio.src = URL.createObjectURL(file);
+      mp3Audio.controls = true;
+      mp3Audio.style.marginTop = '20px';
+      document.body.appendChild(mp3Audio);
+
+      mp3Audio.addEventListener('play', () => {
+        switchInput('mp3');
+      });
+
+      mp3Audio.load(); // Laat gebruiker zelf op play klikken
+    });
+  </script>
+
+</body>
+</html>
