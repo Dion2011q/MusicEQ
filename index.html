@@ -17,18 +17,18 @@
 <section id="row1">
     <section id="info-lights">
         <span id="track-info"></span>
-        <span id="on-time"></span>
+        <span id="on-time">ON TIME</span>
         <span id="clock-info"></span>
     </section>
     <section id="title">
-        <span id="title-text"></span>
+        <span id="title-text"></span> <!-- de grote tekst ding-->
     </section>
 </section>
 <section id="row2">
-    <span id="tuned-light"></span>
-    <span id="auto-light"></span>
-    <span id="auto-power-off-light"></span>
-    <span id="sleep-light"></span>
+    <span id="tuned-light">TUNED</span>
+    <span id="auto-light">AUTO</span>
+    <span id="auto-power-off-light">AUTO POWER OFF</span>
+    <span id="sleep-light">SLEEP</span>
     <span id="a-bass-ex-light">A. BASS EX.</span>
     <span id="live-surround-light">LIVE SURROUND</span>
     <span id="sound-mode-light">SOUND MODE</span>
@@ -43,7 +43,7 @@
     <section id="CD-section">
         <section id="CD-lights">
             <section id="CD-lights-section1">
-                <span id="random-light"> RANDOM</span>
+                <span id="random-light">RANDOM</span>
             </section>
             <section id="CD-lights-section2">
                 <span id="program-light">PROGRAM</span>
@@ -90,45 +90,20 @@
 <section id="row4">
     <section id="input-buttons">
         <button class="input-button" id="power-button">POWER</button>
-        <button class="input-button" id="radio-button" onclick="switchInput('radio')">FM/MW/LW</button>
-        <button class="input-button" id="aux-button" onclick="switchInput('aux')">AUX</button>
-        <button class="input-button" id="phono-button" onclick="switchInput('phono')">PHONO</button>
+        <button class="input-button" id="radio-button">FM/MW/LW</button>
+        <button class="input-button" id="aux-button">AUX</button>
+        <button class="input-button" id="phono-button">PHONO</button>
+        <button class="input-button" id="mp3-button">MP3</button>
     </section>
-
-
-<input type="file" id="audioFile" accept=".mp3,audio/mpeg">
-    <audio id="radio" crossorigin="anonymous" preload="none"> <!-- radio-->
-        <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac">
-    </audio>
-
-  <script>
-    const input = document.getElementById('audioFile');
-    const player = document.getElementById('audioPlayer');
-
-    input.addEventListener('change', () => {
-      const file = input.files[0];
-      if (!file) return;
-
-      // Check of het bestand een MP3 is
-      const isMp3 = file.name.toLowerCase().endsWith('.mp3') || file.type === 'audio/mpeg';
-
-      if (!isMp3) {
-        alert("Dit is geen geldig MP3-bestand.");
-        return;
-      }
-
-      // ObjectURL maken en afspelen
-      const url = URL.createObjectURL(file);
-      player.src = url;
-
-      // Voor iOS autoplay werkt niet zonder user interaction, dus alleen .play() als gebruiker net klikte
-      player.load();
-    });
-  </script>
 </section>
 <section id="row5">
-        <button class="input-button" id="tape-button">TAPE</button>
-        <button class="input-button" id="cd-button">CD</button>
+    <button class="input-button" id="tape-button">TAPE</button>
+    <button class="input-button" id="cd-button">CD</button>
 </section>
+    <input type="file" id="audioFile" accept=".mp3,audio/mpeg">
+    
+    <audio id="radio" crossorigin="anonymous" preload="none"> <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac"></audio> <!-- npo radio 2 stream-->
+
+    <audio id="audioPlayer" controls></audio>
 </body>
 </html>

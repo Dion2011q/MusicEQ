@@ -1,4 +1,4 @@
-// file script.js
+// script.js
 
 // Constants IDs
 const titleText = document.getElementById("title-text");
@@ -12,23 +12,35 @@ const powerButton = document.getElementById("power-button");
 const trackInfo = document.getElementById("track-info");
 const clockInfo = document.getElementById("clock-info");
 const infoLights = document.getElementById("info-lights");
-const button = document.querySelector("button");
+const stereoLight = document.getElementById("stereo-light");
+const tunedLight = document.getElementById("tuned-light");
+
+// Audio elementen
+const radio = document.getElementById("radio");
+const audioPlayer = document.getElementById("audioPlayer"); // Dit is de speler voor MP3-bestanden
+
+// MP3-bestandsinput
+const audioFileInput = document.getElementById("audioFile");
 
 let isPoweredOn = false;
 let clockInterval = null;
 let lastSource = null;
+let currentAudio = null; // Houdt de actieve audiobron bij
 
 // Bij het laden van de pagina: klokmodus aan
 window.addEventListener("DOMContentLoaded", () => {
     isPoweredOn = false;
     showClock();
+    // Zorg ervoor dat de audioPlayers initieel gepauzeerd zijn
+    radio.pause();
+    audioPlayer.pause();
 });
 
 // Start klokmodus
 function showClock() {
     function updateClock() {
         const now = new Date();
-        const hours = now.getHours().toString(); // ← geen padStart
+        const hours = now.getHours().toString();
         const minutes = now.getMinutes().toString().padStart(2, '0');
         titleText.textContent = `${hours}:${minutes}`;
     }
@@ -37,7 +49,7 @@ function showClock() {
     clockInterval = setInterval(updateClock, 1000);
     trackInfo.textContent = "";
     clockInfo.textContent = "CLOCK";
-    infoLights.style.marginRight = "128px"; // ← aangepaste marge bij klokmodus
+    infoLights.style.marginRight = "128px";
 }
 
 // Stop klokmodus
@@ -45,7 +57,7 @@ function stopClock() {
     clearInterval(clockInterval);
     clockInterval = null;
     clockInfo.textContent = "";
-    infoLights.style.marginRight = "24px"; // ← normale marge buiten klokmodus
+    infoLights.style.marginRight = "24px";
 }
 
 // Inputbron selecteren
@@ -56,39 +68,77 @@ function setSource(title, track = "") {
     lastSource = { title, track };
 }
 
-// Bronknoppen
-radioButton.addEventListener("click", () => {
-    setSource("FM 88.10 MHz");
+// Functie om de audio-input te schakelen
+function switchInput(type) {
+    // Pauzeer *alle* potentiële audiobronnen voordat we een nieuwe starten
+    if (radio) radio.pause();
+    if (audioPlayer) audioPlayer.pause();
 
-    try {
-        radio.currentTime = 0; // optioneel: begin opnieuw
-        radio.play().catch(err => {
-            console.error("Radio kan niet afspelen:", err);
-        });
-    } catch (e) {
-        console.error("Fout bij radio afspelen:", e);
+    // Reset lichten
+    stereoLight.textContent = "";
+    tunedLight.textContent = "";
+
+    // Werk de huidige audiobron bij
+    let newAudioSource = null;
+
+    switch (type) {
+        case 'radio':
+            setSource("FM 88.10 MHz");
+            stereoLight.textContent = "STEREO";
+            tunedLight.textContent = "TUNED";
+            // radio.currentTime = 0; // Optioneel: begin radio steeds opnieuw
+            radio.play().catch(err => {
+                console.error("Radio kan niet afspelen:", err);
+            });
+            newAudioSource = radio;
+            break;
+        case 'aux':
+            setSource("AUX");
+            newAudioSource = null; // Geen actieve audio voor AUX tenzij extern aangesloten
+            break;
+        case 'phono':
+            setSource("PHONO");
+            newAudioSource = null;
+            break;
+        case 'tape':
+            setSource("TAPE");
+            newAudioSource = null;
+            break;
+        case 'cd':
+            setSource("NO DISC");
+            newAudioSource = null;
+            break;
+        case 'mp3':
+            // De MP3 wordt afgespeeld wanneer een bestand is geselecteerd
+            // Deze case wordt getriggerd wanneer een MP3-bestand is geladen en afgespeeld
+            newAudioSource = audioPlayer;
+            // setSource wordt al in de change event listener van audioFileInput gezet
+            break;
+        default:
+            newAudioSource = null;
+            break;
+    }
+
+    // Alleen setupVisualizer aanroepen als de bron daadwerkelijk verandert
+    if (newAudioSource !== currentAudio) {
+        currentAudio = newAudioSource;
+        setupVisualizer(currentAudio);
+    }
+}
+
+// Event listeners voor inputknoppen
+radioButton.addEventListener("click", () => switchInput('radio'));
+auxButton.addEventListener("click", () => switchInput('aux'));
+phonoButton.addEventListener("click", () => switchInput('phono'));
+tapeButton.addEventListener("click", () => switchInput('tape'));
+cdButton.addEventListener("click", () => switchInput('cd'));
+mp3Button.addEventListener("click", () => {
+    // Alleen triggeren als we nog niet in de MP3-modus zitten of er geen bestand is
+    if (currentAudio !== audioPlayer || !audioPlayer.src) {
+        audioFileInput.click(); // Simuleer een klik op de file input
     }
 });
 
-auxButton.addEventListener("click", () => {
-    setSource("AUX");
-    radio.pause(); // radio pauzeren als je wegschakelt
-});
-
-phonoButton.addEventListener("click", () => {
-    setSource("PHONO");
-    radio.pause(); // radio pauzeren als je wegschakelt
-});
-
-tapeButton.addEventListener("click", () => {
-    setSource("TAPE");
-    radio.pause(); // radio pauzeren als je wegschakelt
-});
-
-cdButton.addEventListener("click", () => {
-    setSource("NO DISC");
-    radio.pause(); // radio pauzeren als je wegschakelt
-});
 
 // Power-knop
 powerButton.addEventListener("click", () => {
@@ -96,62 +146,72 @@ powerButton.addEventListener("click", () => {
 
     if (isPoweredOn) {
         stopClock();
-        setSource("AUX");
-        lastSource = { title: "AUX", track: "" };
+        // Na aanzetten, ga naar de laatst bekende bron of naar AUX als er geen is
+        if (lastSource) {
+            setSource(lastSource.title, lastSource.track);
+            // Roep de juiste switchInput aan afhankelijk van lastSource
+            if (lastSource.title.includes("FM")) {
+                switchInput('radio');
+            } else if (lastSource.title === "MP3") {
+                 // Als de laatste bron MP3 was, controleer of er een bestand is geladen
+                if (audioPlayer.src) {
+                    audioPlayer.play().catch(err => console.error("Kan MP3 niet afspelen na power-on:", err));
+                    switchInput('mp3'); // activeer de visualizer voor mp3
+                } else {
+                    setSource("AUX"); // Anders terug naar AUX
+                    switchInput('aux');
+                }
+            }
+             else {
+                switchInput('aux'); // Standaard naar AUX
+            }
+        } else {
+            setSource("AUX");
+            switchInput('aux');
+        }
     } else {
         showClock();
-        radio.pause(); // radio pauzeren als je wegschakelt
+        // Pauzeer beide spelers bij uitschakelen
+        if (radio) radio.pause();
+        if (audioPlayer) audioPlayer.pause();
+        stereoLight.textContent = "";
+        tunedLight.textContent = "";
+        setupVisualizer(null); // Visualizer uitschakelen bij uitzetten
+        currentAudio = null; // Reset de huidige audiobron
     }
 });
 
-
-
-// mp3 player
-
-mp3Button.addEventListener("click", () => {
-    const fileInput = document.getElementById("audioFile");
-    if (fileInput.files.length === 0) {
-        alert("Selecteer eerst een MP3-bestand.");
+// Event listener voor het kiezen van een MP3-bestand
+audioFileInput.addEventListener('change', () => {
+    const file = audioFileInput.files[0];
+    if (!file) {
+        setSource("GEEN BESTAND");
+        switchInput('aux'); // Ga terug naar AUX als geen bestand is geselecteerd
         return;
     }
 
-    const file = fileInput.files[0];
-    const isMp3 = file.name.toLowerCase().endsWith(".mp3") || file.type === "audio/mpeg";
+    const isMp3 = file.name.toLowerCase().endsWith('.mp3') || file.type === 'audio/mpeg';
+
     if (!isMp3) {
         alert("Dit is geen geldig MP3-bestand.");
+        setSource("ONGELDIG BESTAND");
+        switchInput('aux'); // Ga terug naar AUX bij ongeldig bestand
         return;
     }
 
     const url = URL.createObjectURL(file);
-    const player = document.getElementById("audioPlayer");
+    audioPlayer.src = url;
+    audioPlayer.load();
 
-    setSource("MP3", file.name);
-    player.src = url;
-    player.load();
-    player.play().catch(err => {
+    setSource("MP3", "");
+
+    // Speel de MP3 af en activeer de visualizer
+    audioPlayer.play().then(() => {
+        // Alleen de switchInput oproepen als het afspelen succesvol is
+        switchInput('mp3');
+    }).catch(err => {
         console.error("Kan MP3 niet afspelen:", err);
+        setSource("SPEELFOUT MP3");
+        switchInput('aux'); // Ga terug naar AUX bij afspeelfout
     });
 });
-
-    fileInput.addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
-
-      if (mp3Audio) {
-        mp3Audio.pause();
-        mp3Audio.remove();
-        mp3Audio = null;
-      }
-
-      mp3Audio = new Audio();
-      mp3Audio.src = URL.createObjectURL(file);
-      mp3Audio.controls = true;
-      mp3Audio.style.marginTop = '20px';
-      document.body.appendChild(mp3Audio);
-
-      mp3Audio.addEventListener('play', () => {
-        switchInput('mp3');
-      });
-
-      mp3Audio.load(); // Laat gebruiker zelf op play klikken
-    });

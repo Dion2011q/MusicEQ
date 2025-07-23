@@ -148,13 +148,11 @@ margin: -80px;
     left: 0;
 }
 
-
-
 #row2 {
     gap: 8px;
 }
 
-#a-bass-ex-light, #live-surround-light, #sound-mode-light {
+#a-bass-ex-light, #live-surround-light, #sound-mode-light, #stereo-light {
     background-color: rgb(217, 0, 0);
     color: black;
     margin: 2px;
