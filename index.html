@@ -13,7 +13,11 @@
     <script src="/js/eq-new.js" defer></script>
 </head>
 <body>
-
+<div id="logo-div">
+    <img src="img/logo.png" alt="jvc logo" id="jvc-logo">
+    <p>COMPACT COMPONENT SYSTEM MX-S300</p>
+</div>
+<div id="screen">
 <section id="row1">
     <section id="info-lights">
         <span id="track-info"></span>
@@ -82,28 +86,39 @@
             <li class="sound-mode">MANUAL</li>
         </ul>
     </section>
-    <section id="controls">
-        <button id="prev">prev</button>
-        <button id="next">next</button>
-    </section>
 </section>
-<section id="row4">
-    <section id="input-buttons">
+</div>
+<div>
+    <div id="row4">
         <button class="input-button" id="power-button">POWER</button>
-        <button class="input-button" id="radio-button">FM/MW/LW</button>
-        <button class="input-button" id="aux-button">AUX</button>
-        <button class="input-button" id="phono-button">PHONO</button>
-        <button class="input-button" id="mp3-button">MP3</button>
-    </section>
-</section>
-<section id="row5">
-    <button class="input-button" id="tape-button">TAPE</button>
-    <button class="input-button" id="cd-button">CD</button>
-</section>
+        <section id="input-buttons">
+            <button class="input-button" id="radio-button">FM/MW/LW</button>
+            <button class="input-button" id="aux-button">AUX</button>
+            <button class="input-button" id="phono-button">PHONO</button>
+        </section>
+    </div>
     <input type="file" id="audioFile" accept=".mp3,audio/mpeg">
     
     <audio id="radio" crossorigin="anonymous" preload="none"> <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac"></audio> <!-- npo radio 2 stream-->
 
     <audio id="audioPlayer" controls></audio>
+
+    <section id="controls">
+        <button id="vocal-masking-button"></button>
+        <button id="a-bass-ex-button"></button>
+        <p>SOUND EFFECT</p>
+        <p>SEA CONTROL</p>
+        <button id="sound-effect-button">ON/OFF</button>
+        <button id="sea-control-button">HIGH/LOW</button>
+        <p>MUSIC JOG</p>
+        <button id="prev">prev</button>
+        <button id="next">next</button>
+    </section>
+<section id="">
+    <button class="input-button" id="tape-button">TAPE</button>
+    <button class="input-button" id="cd-button">CD</button>
+    <button class="input-button" id="mp3-button">MP3</button>
+</section>
+</div>
 </body>
 </html>
