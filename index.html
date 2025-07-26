@@ -7,16 +7,16 @@
 
     <link rel="stylesheet" href="style.css">
     <script src="/js/script.js" defer></script>
-    <!-- <script src="/js/equalizer.js" defer></script> -->
     <script src="/js/sound-mode.js" defer></script>
-
     <script src="/js/eq-new.js" defer></script>
+    <script src="/js/controls.js" defer></script>
 </head>
 <body>
 <div id="logo-div">
     <img src="img/logo.png" alt="jvc logo" id="jvc-logo">
     <p>COMPACT COMPONENT SYSTEM MX-S300</p>
 </div>
+<div id="screen-row">
 <div id="screen">
 <section id="row1">
     <section id="info-lights">
@@ -88,6 +88,41 @@
     </section>
 </section>
 </div>
+<section id="controls">
+    <p class="a-bass-text">A. BASS EX.</p>
+    <p class="vocal-masking-text">VOCAL<br>MASKING</p>
+    <button class="vocal-masking">testvocal</button>
+    <button class="a-bass">testbass</button>
+
+    <p class="sound-effect-label">SOUND EFFECT</p>
+    <p class="sea-control-label">SEA CONTROL</p>
+
+    <button class="sound-effect">ON/OFF</button>
+    <button class="sea-control">HIGH/LOW</button>
+
+    <p class="music-jog-label">MUSIC<br>JOG</p>
+    <div class="jog-buttons">
+        <button id="prev"></button>
+        <button id="next"></button>
+    </div>
+
+  <div class="volume-group">
+    <p class="volume-label">VOLUME</p>
+    <div class="volume-knob" id="volume-knob">
+      <div class="red-dot"></div>
+    </div>
+    <div class="volume-range">
+      <span>MIN</span>
+      <span>MAX</span>
+    </div>
+  </div>
+</section>
+
+
+
+</div>
+
+
 <div>
     <div id="row4">
         <button class="input-button" id="power-button">POWER</button>
@@ -97,23 +132,13 @@
             <button class="input-button" id="phono-button">PHONO</button>
         </section>
     </div>
+</div>
     <input type="file" id="audioFile" accept=".mp3,audio/mpeg">
     
     <audio id="radio" crossorigin="anonymous" preload="none"> <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac"></audio> <!-- npo radio 2 stream-->
 
     <audio id="audioPlayer" controls></audio>
 
-    <section id="controls">
-        <button id="vocal-masking-button"></button>
-        <button id="a-bass-ex-button"></button>
-        <p>SOUND EFFECT</p>
-        <p>SEA CONTROL</p>
-        <button id="sound-effect-button">ON/OFF</button>
-        <button id="sea-control-button">HIGH/LOW</button>
-        <p>MUSIC JOG</p>
-        <button id="prev">prev</button>
-        <button id="next">next</button>
-    </section>
 <section id="">
     <button class="input-button" id="tape-button">TAPE</button>
     <button class="input-button" id="cd-button">CD</button>
