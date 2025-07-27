@@ -25,7 +25,9 @@ const audioFileInput = document.getElementById("audioFile");
 let isPoweredOn = false;
 let clockInterval = null;
 let lastSource = null;
-let currentAudio = null; // Houdt de actieve audiobron bij
+
+// MAAK currentAudio GLOBAAL TOEGANKELIJK
+window.currentAudio = null; // Houdt de actieve audiobron bij
 
 // Bij het laden van de pagina: klokmodus aan
 window.addEventListener("DOMContentLoaded", () => {
@@ -34,6 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // Zorg ervoor dat de audioPlayers initieel gepauzeerd zijn
     radio.pause();
     audioPlayer.pause();
+    window.currentAudio = null; // Zorg dat deze ook gereset is
 });
 
 // Start klokmodus
@@ -78,7 +81,7 @@ function switchInput(type) {
     stereoLight.textContent = "";
     tunedLight.textContent = "";
 
-    // Werk de huidige audiobron bij
+    // Werk de huidige audiobron bij (nu via window.currentAudio)
     let newAudioSource = null;
 
     switch (type) {
@@ -86,7 +89,6 @@ function switchInput(type) {
             setSource("FM 88.10 MHz");
             stereoLight.textContent = "STEREO";
             tunedLight.textContent = "TUNED";
-            // radio.currentTime = 0; // Optioneel: begin radio steeds opnieuw
             radio.play().catch(err => {
                 console.error("Radio kan niet afspelen:", err);
             });
@@ -109,10 +111,7 @@ function switchInput(type) {
             newAudioSource = null;
             break;
         case 'mp3':
-            // De MP3 wordt afgespeeld wanneer een bestand is geselecteerd
-            // Deze case wordt getriggerd wanneer een MP3-bestand is geladen en afgespeeld
             newAudioSource = audioPlayer;
-            // setSource wordt al in de change event listener van audioFileInput gezet
             break;
         default:
             newAudioSource = null;
@@ -120,9 +119,9 @@ function switchInput(type) {
     }
 
     // Alleen setupVisualizer aanroepen als de bron daadwerkelijk verandert
-    if (newAudioSource !== currentAudio) {
-        currentAudio = newAudioSource;
-        setupVisualizer(currentAudio);
+    if (newAudioSource !== window.currentAudio) { // Vergelijk met window.currentAudio
+        window.currentAudio = newAudioSource; // Update de globale variabele
+        setupVisualizer(window.currentAudio);
     }
 }
 
@@ -131,10 +130,10 @@ radioButton.addEventListener("click", () => switchInput('radio'));
 auxButton.addEventListener("click", () => switchInput('aux'));
 phonoButton.addEventListener("click", () => switchInput('phono'));
 tapeButton.addEventListener("click", () => switchInput('tape'));
-cdButton.addEventListener("click", () => switchInput('cd'));
+cdButton.addEventListener("click", () => setSource("NO DISC")); // CD heeft geen switchInput nodig als er geen audio is
 mp3Button.addEventListener("click", () => {
     // Alleen triggeren als we nog niet in de MP3-modus zitten of er geen bestand is
-    if (currentAudio !== audioPlayer || !audioPlayer.src) {
+    if (window.currentAudio !== audioPlayer || !audioPlayer.src) { // Vergelijk met window.currentAudio
         audioFileInput.click(); // Simuleer een klik op de file input
     }
 });
@@ -146,24 +145,21 @@ powerButton.addEventListener("click", () => {
 
     if (isPoweredOn) {
         stopClock();
-        // Na aanzetten, ga naar de laatst bekende bron of naar AUX als er geen is
         if (lastSource) {
             setSource(lastSource.title, lastSource.track);
-            // Roep de juiste switchInput aan afhankelijk van lastSource
             if (lastSource.title.includes("FM")) {
                 switchInput('radio');
             } else if (lastSource.title === "MP3") {
-                 // Als de laatste bron MP3 was, controleer of er een bestand is geladen
-                if (audioPlayer.src) {
+                 if (audioPlayer.src) {
                     audioPlayer.play().catch(err => console.error("Kan MP3 niet afspelen na power-on:", err));
-                    switchInput('mp3'); // activeer de visualizer voor mp3
+                    switchInput('mp3');
                 } else {
-                    setSource("AUX"); // Anders terug naar AUX
+                    setSource("AUX");
                     switchInput('aux');
                 }
             }
              else {
-                switchInput('aux'); // Standaard naar AUX
+                switchInput('aux');
             }
         } else {
             setSource("AUX");
@@ -171,13 +167,12 @@ powerButton.addEventListener("click", () => {
         }
     } else {
         showClock();
-        // Pauzeer beide spelers bij uitschakelen
         if (radio) radio.pause();
         if (audioPlayer) audioPlayer.pause();
         stereoLight.textContent = "";
         tunedLight.textContent = "";
-        setupVisualizer(null); // Visualizer uitschakelen bij uitzetten
-        currentAudio = null; // Reset de huidige audiobron
+        setupVisualizer(null);
+        window.currentAudio = null; // Reset de globale variabele bij uitzetten
     }
 });
 
@@ -186,7 +181,7 @@ audioFileInput.addEventListener('change', () => {
     const file = audioFileInput.files[0];
     if (!file) {
         setSource("GEEN BESTAND");
-        switchInput('aux'); // Ga terug naar AUX als geen bestand is geselecteerd
+        switchInput('aux');
         return;
     }
 
@@ -195,7 +190,7 @@ audioFileInput.addEventListener('change', () => {
     if (!isMp3) {
         alert("Dit is geen geldig MP3-bestand.");
         setSource("ONGELDIG BESTAND");
-        switchInput('aux'); // Ga terug naar AUX bij ongeldig bestand
+        switchInput('aux');
         return;
     }
 
@@ -203,15 +198,13 @@ audioFileInput.addEventListener('change', () => {
     audioPlayer.src = url;
     audioPlayer.load();
 
-    setSource("MP3", "");
+    setSource("MP3", file.name); // Toon de bestandsnaam als trackinfo
 
-    // Speel de MP3 af en activeer de visualizer
     audioPlayer.play().then(() => {
-        // Alleen de switchInput oproepen als het afspelen succesvol is
         switchInput('mp3');
     }).catch(err => {
         console.error("Kan MP3 niet afspelen:", err);
         setSource("SPEELFOUT MP3");
-        switchInput('aux'); // Ga terug naar AUX bij afspeelfout
+        switchInput('aux');
     });
 });
