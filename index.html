@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> MusicEQ</title>
 
+    <!-- css & js -->
     <link rel="stylesheet" href="style.css">
     <script src="/js/script.js" defer></script>
     <script src="/js/sound-mode.js" defer></script>
     <script src="/js/eq-new.js" defer></script>
     <script src="/js/controls.js" defer></script>
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="img/favicon/site.webmanifest">
 </head>
 <body>
 <div id="logo-div">
@@ -133,17 +140,17 @@
         </section>
     </div>
 </div>
+<section id="row5">
+    <button class="input-button" id="tape-button">TAPE</button>
+    <button class="input-button" id="cd-button">CD</button>
+    <button class="input-button" id="mp3-button">MP3</button>
+</section>
+
     <input type="file" id="audioFile" accept=".mp3,audio/mpeg">
     
     <audio id="radio" crossorigin="anonymous" preload="none"> <source src="https://icecast.omroep.nl/radio2-bb-aac" type="audio/aac"></audio> <!-- npo radio 2 stream-->
 
     <audio id="audioPlayer" controls></audio>
-
-<section id="">
-    <button class="input-button" id="tape-button">TAPE</button>
-    <button class="input-button" id="cd-button">CD</button>
-    <button class="input-button" id="mp3-button">MP3</button>
-</section>
 </div>
 </body>
 </html>
