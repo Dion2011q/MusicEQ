@@ -29,6 +29,64 @@ let lastSource = null;
 // MAAK currentAudio GLOBAAL TOEGANKELIJK
 window.currentAudio = null; // Houdt de actieve audiobron bij
 
+// Functie om alle lichten, teksten en lijnen te verbergen behalve de klok
+function hideAllTextAndLights() {
+    const elementsToHide = [
+        trackInfo,
+        document.getElementById("on-time"),
+        document.getElementById("tuned-light"),
+        document.getElementById("auto-light"),
+        document.getElementById("auto-power-off-light"),
+        document.getElementById("sleep-light"),
+        document.getElementById("a-bass-ex-light"),
+        document.getElementById("live-surround-light"),
+        document.getElementById("sound-mode-light"),
+        stereoLight,
+        document.getElementById("random-light"),
+        document.getElementById("program-light"),
+        document.getElementById("repeat1-light"),
+        document.getElementById("CD-tracks"),
+        document.getElementById("sound-modes"),
+        document.getElementById("middle-line"),
+        document.getElementById("middle-line-inverted"),
+    ];
+
+    elementsToHide.forEach(el => {
+        if (el) {
+            el.style.display = 'none';
+        }
+    });
+}
+
+// Functie om alle lichten, teksten en lijnen weer zichtbaar te maken
+function showAllTextAndLights() {
+    const elementsToShow = [
+        trackInfo,
+        document.getElementById("on-time"),
+        document.getElementById("tuned-light"),
+        document.getElementById("auto-light"),
+        document.getElementById("auto-power-off-light"),
+        document.getElementById("sleep-light"),
+        document.getElementById("a-bass-ex-light"),
+        document.getElementById("live-surround-light"),
+        document.getElementById("sound-mode-light"),
+        stereoLight,
+        document.getElementById("random-light"),
+        document.getElementById("program-light"),
+        document.getElementById("repeat1-light"),
+        document.getElementById("CD-tracks"),
+        document.getElementById("sound-modes"),
+        document.getElementById("middle-line"),
+        document.getElementById("middle-line-inverted"),
+    ];
+
+    elementsToShow.forEach(el => {
+        if (el) {
+            el.style.display = ''; // Herstelt de standaardweergave
+        }
+    });
+}
+
 // Bij het laden van de pagina: klokmodus aan
 window.addEventListener("DOMContentLoaded", () => {
     isPoweredOn = false;
@@ -41,6 +99,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // Start klokmodus
 function showClock() {
+    // Verberg alle andere elementen
+    hideAllTextAndLights();
+    
     function updateClock() {
         const now = new Date();
         const hours = now.getHours().toString();
@@ -61,6 +122,8 @@ function stopClock() {
     clockInterval = null;
     clockInfo.textContent = "";
     infoLights.style.marginRight = "24px";
+    // Maak alle lichten, teksten en lijnen weer zichtbaar
+    showAllTextAndLights();
 }
 
 // Inputbron selecteren
@@ -188,7 +251,6 @@ audioFileInput.addEventListener('change', () => {
     const isMp3 = file.name.toLowerCase().endsWith('.mp3') || file.type === 'audio/mpeg';
 
     if (!isMp3) {
-        alert("Dit is geen geldig MP3-bestand.");
         setSource("ONGELDIG BESTAND");
         switchInput('aux');
         return;
@@ -198,7 +260,7 @@ audioFileInput.addEventListener('change', () => {
     audioPlayer.src = url;
     audioPlayer.load();
 
-    setSource("MP3", file.name); // Toon de bestandsnaam als trackinfo
+    setSource("MP3"); // Toon MP3 als source
 
     audioPlayer.play().then(() => {
         switchInput('mp3');

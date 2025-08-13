@@ -227,20 +227,22 @@ html, body {
 .sound-effect-label {
     position: absolute;
     top: 90px;
-    left: 40px;
+    left: 25px;
     font-size: 10px;
     color: #bbbbbb;
+    font-family: "Arial Narrow", sans-serif;
 }
 
 .sea-control-label {
     position: absolute;
     top: 90px;
-    left: 110px;
+    left: 105px;
     font-size: 10px;
     color: #bbbbbb;
+    font-family: "Arial Narrow", sans-serif;
 }
 
-.sound-effect {
+#sound-effect {
     position: absolute;
     top: 120px;
     left: 40px;
@@ -343,43 +345,95 @@ html, body {
     transition: transform 0.05s linear;
 }
 
+/* Container voor de hele component */
 .jog-buttons {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: fit-content;
-    margin: 20px auto;
+    width: 100px;
+    height: 100px;
+    position: relative;
+    border-radius: 50%;
+    background-color: #444; /* Donkergrijze achtergrond */
+    overflow: hidden;
 }
 
+/* De middelste cirkel */
+.jog-buttons::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 38px;
+    height: 38px;
+    background-color: #555; /* Middengrijze kleur */
+    border-radius: 50%;
+    z-index: 2;
+}
+
+/* De knoppen voor prev en next */
 #prev, #next {
     width: 50px;
-    height: 100px;
+    height: 100%;
     border: none;
-    background: #333;
+    background-color: transparent;
     cursor: pointer;
     position: relative;
+    z-index: 1;
 }
 
-/* Halve cirkel links */
-#prev {
-    border-top-left-radius: 50px;
-    border-bottom-left-radius: 50px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-right: 0px; /* tegen elkaar aan */
+/* Standaardstijl van de puntjes */
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #666; /* Grijze kleur voor de puntjes */
+    border-radius: 50%;
+    position: absolute;
+    z-index: 3;
+}
+/* Posities van de puntjes op de prev-knop (linkerkant) */
+#prev .dot:nth-child(1) { /* Bovenste puntje links */
+    top: 17px;
+    left: 23px;
 }
 
-/* Halve cirkel rechts */
-#next {
-    border-top-right-radius: 50px;
-    border-bottom-right-radius: 50px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    margin-left: 0px; /* tegen elkaar aan */
+#prev .dot:nth-child(2) { /* Middelste puntje links */
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
 }
 
-#prev:hover, #next:hover {
-    background: #888;
+#prev .dot:nth-child(3) { /* Onderste puntje links */
+    bottom: 17px;
+    left: 23px;
+}
+
+#prev .dot:nth-child(4) { /* Bovenste puntje, bijna in het midden */
+    top: 10px;
+    right: -5px; /* Positionering aan de rechterkant van de prev-knop */
+}
+
+/* Posities van de puntjes op de next-knop (rechterkant) */
+#next .dot:nth-child(1) { /* Bovenste puntje rechts */
+    top: 17px;
+    right: 23px;
+}
+
+#next .dot:nth-child(2) { /* Middelste puntje rechts */
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+#next .dot:nth-child(3) { /* Onderste puntje rechts */
+    bottom: 17px;
+    right: 23px;
+}
+
+#next .dot:nth-child(4) { /* Onderste puntje, bijna in het midden */
+    bottom: 10px;
+    left: -5px; /* Positionering aan de linkerkant van de next-knop */
 }
 
 .a-bass, .vocal-masking {
@@ -391,10 +445,6 @@ html, body {
     box-shadow: inset 0 0 4px black;
     border: none;
     overflow: hidden;
-}
-
-.a-bass:hover, .vocal-masking:hover, .sound-effect:hover, .sea-control:hover, #prev:hover, #next:hover {
-    background: #555;
 }
 
 .a-bass:active, .vocal-masking:active, .sound-effect:active, .sea-control:active, #prev:active, #next:active {

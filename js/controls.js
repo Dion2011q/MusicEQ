@@ -18,6 +18,7 @@ function makeVerticalRotatable(elementId, minDeg = 0, maxDeg = 360, onRotateCall
     onRotateCallback(percentage);
   }
 
+  // Mouse events
   knob.addEventListener("mousedown", (e) => {
     e.preventDefault();
     isDragging = true;
@@ -46,6 +47,40 @@ function makeVerticalRotatable(elementId, minDeg = 0, maxDeg = 360, onRotateCall
   });
 
   document.addEventListener("mouseup", () => {
+    isDragging = false;
+    knob.style.cursor = "grab";
+  });
+
+  // Touch events
+  knob.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    isDragging = true;
+    startY = e.touches[0].clientY;
+    knob.style.cursor = "grabbing";
+  }, { passive: false });
+
+  document.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    const deltaY = startY - touch.clientY;
+    const sensitivity = 1.5;
+    let newRotation = currentRotation + deltaY * sensitivity;
+
+    newRotation = Math.max(minDeg, Math.min(maxDeg, newRotation));
+
+    knob.style.transform = `rotate(${newRotation}deg)`;
+    currentRotation = newRotation;
+    startY = touch.clientY;
+
+    localStorage.setItem("rotation-" + elementId, currentRotation);
+
+    if (onRotateCallback) {
+      const percentage = (currentRotation - minDeg) / rotationRange;
+      onRotateCallback(percentage);
+    }
+  }, { passive: false });
+
+  document.addEventListener("touchend", () => {
     isDragging = false;
     knob.style.cursor = "grab";
   });
