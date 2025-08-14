@@ -184,6 +184,8 @@ html, body {
 
 #row2 {
     gap: 8px;
+    margin-bottom: 6px;
+    margin-top: 6px;
 }
 
 #a-bass-ex-light, #live-surround-light, #sound-mode-light, #stereo-light {
@@ -198,7 +200,7 @@ html, body {
     position: relative;
     width: 25vw;
     height: 400px;
-    margin: 40px auto;
+    margin: 0px auto;
     padding: 20px;
     border: red 2px solid;
     color: #dddddd;
