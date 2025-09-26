@@ -4,13 +4,13 @@ const canvas = document.getElementById('visualizer');
 const ctx = canvas.getContext('2d');
 
 const bandSettings = [
-  { range: [25, 99], gain: 0.8 },
-  { range: [100, 249], gain: 0.9 },
-  { range: [250, 649], gain: 1.0 },
-  { range: [650, 1599], gain: 1.1 },
+  { range: [25, 99], gain: 0.6 },
+  { range: [100, 249], gain: 0.7 },
+  { range: [250, 649], gain: 0.8 },
+  { range: [650, 1599], gain: 1.0 },
   { range: [1600, 4499], gain: 1.2 },
-  { range: [4500, 11999], gain: 1.5 },
-  { range: [12000, 20000], gain: 1.9 }
+  { range: [4500, 11999], gain: 1.6 },
+  { range: [12000, 20000], gain: 2.0 }
 ];
 
 let audioCtx;
@@ -102,7 +102,7 @@ function draw() {
       value = averageInRange(minF, maxF) * gain;
     } else {
       const sum = dataArray.reduce((a, b) => a + b, 0);
-      value = (sum / dataArray.length) * 3;
+      value = (sum / dataArray.length) * 2.0; // Versterk de totale amplitude voor de laatste band
     }
 
     const targetSteps = Math.floor((value / 255) * maxSteps);
