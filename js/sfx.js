@@ -1,44 +1,72 @@
-// Audio-elementen
-const soundA = document.getElementById("poweron");   // bij inschakelen
-const soundB = document.getElementById("amp");       // 5 sec later na A
-const soundC = document.getElementById("poweroff");  // bij uitschakelen
+// Verzamel alle audio in een object voor overzicht
+const sounds = {
+  powerOn: document.getElementById("poweron"),
+  amp: document.getElementById("amp"),
+  powerOff: document.getElementById("poweroff"),
+  fm: document.getElementById("fm"),
+  aux: document.getElementById("aux"),
+  phono: document.getElementById("phono"),
+  abass: document.getElementById("abass"),
+};
 
 // Helper: reset naar begin en speel af
 function resetAndPlay(audio) {
+  if (!audio) return;
   audio.currentTime = 0;
   audio.play();
 }
 
-// Toggle houdt bij of we 'aan' of 'uit' staan
+// Toggle bijhouden of power aan of uit is
 let isOn = false;
-let bTimeout = null;
+let ampTimeout = null;
 
 function handlePowerClick() {
-  // Stop geplande amp-geluid als er opnieuw geklikt wordt
-  if (bTimeout) {
-    clearTimeout(bTimeout);
-    bTimeout = null;
+  // Stop geplande amp sound als opnieuw geklikt wordt
+  if (ampTimeout) {
+    clearTimeout(ampTimeout);
+    ampTimeout = null;
   }
 
   if (!isOn) {
-    // Zet aan: speel poweron
-    resetAndPlay(soundA);
+    resetAndPlay(sounds.powerOn);
 
-    // Na 5 sec automatisch amp
-    bTimeout = setTimeout(() => {
-      resetAndPlay(soundB);
-    }, 4500); // 4500 ms = 4.5 sec na start poweron
+    // na 4.5 sec automatisch amp
+    ampTimeout = setTimeout(() => {
+      resetAndPlay(sounds.amp);
+    }, 4500);
 
     isOn = true;
   } else {
-    // Zet uit: speel poweroff
-    resetAndPlay(soundC);
+    resetAndPlay(sounds.powerOff);
     isOn = false;
   }
 }
 
-// Koppel de functie zodra de pagina geladen is
+// Input source handlers → altijd afspelen, ook al is power uit
+function handleInputClick(source) {
+  resetAndPlay(sounds[source]);
+}
+
+// Extra knop handler → alleen bij power aan
+function handleABassClick() {
+  if (!isOn) return;
+  resetAndPlay(sounds.abass);
+}
+
+// Event listeners koppelen zodra de pagina geladen is
 document.addEventListener("DOMContentLoaded", () => {
-  const powerButton = document.getElementById("power-button");
-  powerButton.addEventListener("click", handlePowerClick);
+  document.getElementById("power-button")
+    .addEventListener("click", handlePowerClick);
+
+  document.getElementById("radio-button")
+    .addEventListener("click", () => handleInputClick("fm"));
+
+  document.getElementById("aux-button")
+    .addEventListener("click", () => handleInputClick("aux"));
+
+  document.getElementById("phono-button")
+    .addEventListener("click", () => handleInputClick("phono"));
+
+  document.querySelector(".a-bass")
+    .addEventListener("click", handleABassClick);
 });
